@@ -4,7 +4,7 @@ import com.oracle.iot.client.message.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-@RestController
+@Controller
 class IoTRaspberryPiManager {
     private static final Logger logger = LoggerFactory.getLogger(IoTRaspberryPiManager.class);
     private static final String URN_DEVICE = "urn:Accenture:oshinoraspi2";
@@ -16,10 +16,12 @@ class IoTRaspberryPiManager {
     private static double tooHotThreshold = 50.0;
 
     @RequestMapping("/")
+    @ResponseBody
     String home() {
       render('home')
     }
     @RequestMapping("/start")
+    @ResponseBody
     String start() {
       logger.info("START: cpu-temp sensor.")
       DirectlyConnectedDevice device = new DirectlyConnectedDevice(PROVISIONING_FILE_PATH, PROVISIONING_FILE_PASS);
@@ -42,7 +44,7 @@ class IoTRaspberryPiManager {
         } else {
           logger.info("MESSAGE: attr=[${ATTRIBUTE_CPU_TEMP}],message=[${cpuTemp}]")
           DataMessage message = new DataMessage.Builder()
-    				.format(URN_DEVICE + ":attributes")
+    				.format("${URN_DEVICE}:attributes")
     				.source(device.getEndpointId())
     				.dataItem(ATTRIBUTE_CPU_TEMP, cpuTemp)
     				.build()
@@ -54,18 +56,26 @@ class IoTRaspberryPiManager {
       "finished"
     }
     @RequestMapping("/stop")
+    @ResponseBody
     String stop() {
       logger.info("STOP: cpu-temp sensor.")
       isRunning = false
       "stopped successfully"
     }
+    @RequestMapping("/cpu-temp/tooHotAlert")
+    String cpuTempTooHotAlert(@RequestParam("cpu-temp") String cpuTemp) {
+      logger.info("UPDATE: cpu-temp:tooHotThreshold=[${cpuTemp}].")
+      tooHotThreshold = cpuTemp as double
+      "redirect:/"
+    }
 
     private double getCpuTemp() {
       "/opt/vc/bin/vcgencmd measure_temp".execute().text.find(/\d+\.\d+/) as double
     }
-    private String render(String templateName, binding = ['sample': 'OK']) {
+    private String render(String templateName) {
       def f = new File("view/${templateName}.template")
       def engine = new groovy.text.SimpleTemplateEngine()
+      def binding = ['tooHotThreshold': tooHotThreshold]
       def template = engine.createTemplate(f).make(binding)
       template.toString()
     }

@@ -13,6 +13,13 @@
     <h1>Raspberry Pi Manager</h1>
     <button class="btn btn-primary btn-lg active" onclick="\$.get('/start');">Start</button>
     <button class="btn btn-danger btn-lg active" onclick="\$.get('/stop');">Stop</button>
+    <form class="form-inline" action="/cpu-temp/tooHotAlert" method="post">
+      <div class="form-group">
+        <label for="tooHotThreshold">CPU temperature ALERT</label>
+        <input type="number" class="form-control" id="tooHotThreshold" name="cpu-temp" value="<%= tooHotThreshold %>">
+        <button type="submit" class="btn btn-default">Save</button>
+      </div>
+    </form>
   </div>
 </body>
 </html>
