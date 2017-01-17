@@ -1,0 +1,5 @@
+<h1>Raspberry Pi</h1>
+<ul>
+  <li><a href=/start>start</a></li>
+  <li><a href=/stop>stop</a></li>
+</ul>
