@@ -38,6 +38,7 @@ class IoTRaspberryPiManager {
         sleep(5000)
       }
       device.close()
+      "finished"
     }
     @RequestMapping("/stop")
     String stop() {
