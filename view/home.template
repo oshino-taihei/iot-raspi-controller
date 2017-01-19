@@ -10,7 +10,7 @@
   </head>
 <body>
   <div class="container">
-    <h1>Raspberry Pi Manager</h1>
+    <h1 class="page-header">Raspberry Pi Manager</h1>
     <button class="btn btn-primary btn-lg active" onclick="\$.get('/start');">Start</button>
     <button class="btn btn-danger btn-lg active" onclick="\$.get('/stop');">Stop</button>
     <form class="form-inline" action="/cpu-temp/tooHotAlert" method="post">
