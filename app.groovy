@@ -14,11 +14,13 @@ class IoTRaspberryPiManager {
     private static final String PROVISIONING_FILE_PASS = "lvp0xeTSMAOnC9Nx";
     private static boolean isRunning = false;
     private static double tooHotThreshold = 50.0;
+    private static boolean useDummySensor = false;
 
     @RequestMapping("/")
     @ResponseBody
     String home() {
-      render('home')
+      def binding = ['tooHotThreshold': tooHotThreshold, 'useDummySensor': useDummySensor]
+      render('home', binding)
     }
     @RequestMapping("/start")
     @ResponseBody
@@ -30,7 +32,7 @@ class IoTRaspberryPiManager {
       }
       isRunning = true;
       while(isRunning) {
-        double cpuTemp = getCpuTemp()
+        double cpuTemp = useDummySensor ? getDummyCpuTemp() : getCpuTemp()
         if(cpuTemp > tooHotThreshold) {
           logger.info("ALERT: attr=[${ATTRIBUTE_CPU_TEMP}],message=[${cpuTemp}]")
           AlertMessage alert = new AlertMessage.Builder()
@@ -62,20 +64,33 @@ class IoTRaspberryPiManager {
       isRunning = false
       "stopped successfully"
     }
-    @RequestMapping("/cpu-temp/tooHotAlert")
-    String cpuTempTooHotAlert(@RequestParam("cpu-temp") String cpuTemp) {
+    @RequestMapping("/settings")
+    String settings(@RequestParam("cpu-temp") String cpuTemp,
+                    @RequestParam(value = "use-dummy-sensor", required = false) String useDummySensor) {
       logger.info("UPDATE: cpu-temp:tooHotThreshold=[${cpuTemp}].")
       tooHotThreshold = cpuTemp as double
+      if(!this.useDummySensor && useDummySensor == "1") {
+        logger.info("UPDATE: use-dummy-sensor=[true].")
+        this.useDummySensor = true
+      } else if(this.useDummySensor && useDummySensor == null) {
+        logger.info("UPDATE: use-dummy-sensor=[false].")
+        this.useDummySensor = false
+      }
       "redirect:/"
     }
 
     private double getCpuTemp() {
       "/opt/vc/bin/vcgencmd measure_temp".execute().text.find(/\d+\.\d+/) as double
     }
-    private String render(String templateName) {
+
+    private double getDummyCpuTemp() {
+      // Gaussian(mean=50, variance=5^2)
+    	Math.floor((50 + new Random().nextGaussian() * 5) * 10) / 10
+    }
+
+    private String render(String templateName, binding) {
       def f = new File("view/${templateName}.template")
       def engine = new groovy.text.SimpleTemplateEngine()
-      def binding = ['tooHotThreshold': tooHotThreshold]
       def template = engine.createTemplate(f).make(binding)
       template.toString()
     }

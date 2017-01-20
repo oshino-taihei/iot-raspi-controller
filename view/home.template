@@ -11,15 +11,23 @@
 <body>
   <div class="container">
     <h1 class="page-header">Raspberry Pi Manager</h1>
-    <button class="btn btn-primary btn-lg active" onclick="\$.get('/start');">Start</button>
-    <button class="btn btn-danger btn-lg active" onclick="\$.get('/stop');">Stop</button>
-    <form class="form-inline" action="/cpu-temp/tooHotAlert" method="post">
-      <div class="form-group">
-        <label for="tooHotThreshold">CPU temperature ALERT</label>
-        <input type="number" class="form-control" id="tooHotThreshold" name="cpu-temp" value="<%= tooHotThreshold %>">
+    <h2 class="sub-header">Monitoring</h2>
+      <button class="btn btn-primary btn-lg active" onclick="\$.get('/start');">Start</button>
+      <button class="btn btn-danger btn-lg active" onclick="\$.get('/stop');">Stop</button>
+    <h2 class="sub-header">Settings</h2>
+      <form action="/settings" method="post">
+        <div class="form-group">
+          <label for="tooHotThreshold">CPU temperature ALERT</label>
+          <input type="number" class="form-control" id="tooHotThreshold" name="cpu-temp" style="width: 16em;" value="<%= tooHotThreshold %>">
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="use-dummy-sensor" value="1" <%= useDummySensor ? 'checked' : ''%> >
+            Use dummy CPU temperature sensor.
+          </label>
+        </div>
         <button type="submit" class="btn btn-default">Save</button>
-      </div>
-    </form>
+      </form>
   </div>
 </body>
 </html>
