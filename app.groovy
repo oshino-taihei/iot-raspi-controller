@@ -9,7 +9,7 @@ class IoTRaspberryPiManager {
     private static final Logger logger = LoggerFactory.getLogger(IoTRaspberryPiManager.class);
     private static final String URN_DEVICE = "urn:Accenture:oshinoraspi2";
     private static final String URN_ALERT = "urn:Accenture:oshinoraspi2:tooHotCpuAlert";
-    private static final String ATTRIBUTE_CPU_TEMP = "cpu-temp";
+    private static final String ATTRIBUTE_CPU_TEMP = "cpuTemp";
     private static final String PROVISIONING_FILE_PATH = "config/test-oshino-raspi-provisioning-file.conf";
     private static final String PROVISIONING_FILE_PASS = "lvp0xeTSMAOnC9Nx";
     private static boolean isRunning = false;
@@ -40,7 +40,7 @@ class IoTRaspberryPiManager {
             .source(device.getEndpointId())
             .description("over ${tooHotThreshold}")
             .dataItem(ATTRIBUTE_CPU_TEMP, cpuTemp)
-            .severity(AlertMessage.Severity.CRITICAL)
+            .severity(AlertMessage.Severity.NORMAL)
             .build();
 		      device.send(alert);
         } else {
