@@ -43,15 +43,14 @@ class IoTRaspberryPiManager {
             .severity(AlertMessage.Severity.NORMAL)
             .build();
 		      device.send(alert);
-        } else {
-          logger.info("MESSAGE: attr=[${ATTRIBUTE_CPU_TEMP}],message=[${cpuTemp}]")
-          DataMessage message = new DataMessage.Builder()
-    				.format("${URN_DEVICE}:attributes")
-    				.source(device.getEndpointId())
-    				.dataItem(ATTRIBUTE_CPU_TEMP, cpuTemp)
-    				.build()
-          device.send(message);
         }
+        logger.info("MESSAGE: attr=[${ATTRIBUTE_CPU_TEMP}],message=[${cpuTemp}]")
+        DataMessage message = new DataMessage.Builder()
+  				.format("${URN_DEVICE}:attributes")
+  				.source(device.getEndpointId())
+  				.dataItem(ATTRIBUTE_CPU_TEMP, cpuTemp)
+  				.build()
+        device.send(message);
         sleep(5000)
       }
       device.close()
